@@ -1,0 +1,48 @@
+# Import python packages
+import streamlit as st
+from snowflake.snowpark.context import get_active_session
+from snowflake.snowpark.functions import col
+
+# Write directly to the app --> see documentation: magic (st.write can plot any data types!)
+st.title(":cup_with_straw: Customise your :orange[smoothie!] :balloon:")
+st.write(
+  """Choose the fruits **you** want in your custom _smoothie_!
+  """
+)
+
+nameonorder = st.text_input('Name on Smoothie')
+st.write('The name on your smoothie will be: ', nameonorder)
+
+
+# connection zur Snowflake database
+session = get_active_session() # active snowpark session
+my_df = session.table("smoothies.public.fruit_options").select(col("FRUIT_NAME"))
+#st.dataframe(data=my_df, use_container_width=True) # erst das hier zeigt den Table in der App
+
+# wir bauen nun einen multiselect GUI, welcher den snowflake table hinterlegt hat und direkt darauf zugreift!
+ingredients_list = st.multiselect('Choose up to 5 ingredients: ', my_df, max_selections=5)
+
+# unsere Auswahl printen
+if ingredients_list:
+    #st.write(ingredients_list) # gibt es als json aus
+    #st.text(ingredients_list)
+    # wir wollen die list in einen string umwandeln und dann plotten (looks better)
+    ingredients_string = ''
+    for fruit in ingredients_list:
+        ingredients_string += fruit + ' '
+
+    insert_stmt = """ insert into smoothies.public.orders(ingredients, name_on_order)
+    values ('""" + ingredients_string + """', '"""+nameonorder+"""')"""
+    #st.write(insert_stmt)
+    #st.stop()
+
+    # submit button so that not each chosen entry from multiselect df is automatically added
+    insertbutton = st.button('Submit order')
+
+    if insertbutton:
+        session.sql(insert_stmt).collect()
+
+        st.success('Your smoothie is ordered!', icon="✅") # success simply adds green bg
+
+    
+    
