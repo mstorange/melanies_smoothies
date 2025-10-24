@@ -1,6 +1,5 @@
 # Import python packages
 import streamlit as st
-from snowflake.snowpark.context import get_active_session
 from snowflake.snowpark.functions import col
 
 # Write directly to the app --> see documentation: magic (st.write can plot any data types!)
@@ -15,7 +14,8 @@ st.write('The name on your smoothie will be: ', nameonorder)
 
 
 # connection zur Snowflake database
-session = get_active_session() # active snowpark session
+cns = st.connection("snowflake")
+session = cnx.session() 
 my_df = session.table("smoothies.public.fruit_options").select(col("FRUIT_NAME"))
 #st.dataframe(data=my_df, use_container_width=True) # erst das hier zeigt den Table in der App
 
