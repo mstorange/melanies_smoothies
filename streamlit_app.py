@@ -1,6 +1,7 @@
 # Import python packages
 import streamlit as st
 from snowflake.snowpark.functions import col
+import requests
 
 # Write directly to the app --> see documentation: magic (st.write can plot any data types!)
 st.title(":cup_with_straw: Customise your :orange[smoothie!] :balloon:")
@@ -44,5 +45,8 @@ if ingredients_list:
 
         st.success('Your smoothie is ordered!', icon="✅") # success simply adds green bg
 
+# new section to display smoothiefroot nutrition information
+smoothiefroot_response = requests.get("https://my.smoothiefroot.com/api/fruit/watermelon")
+st.text(smoothiefroot_response)
     
     
