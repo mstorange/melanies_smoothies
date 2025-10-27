@@ -14,7 +14,7 @@ st.write('The name on your smoothie will be: ', nameonorder)
 
 
 # connection zur Snowflake database
-cns = st.connection("snowflake")
+cnx = st.connection("snowflake")
 session = cnx.session() 
 my_df = session.table("smoothies.public.fruit_options").select(col("FRUIT_NAME"))
 #st.dataframe(data=my_df, use_container_width=True) # erst das hier zeigt den Table in der App
